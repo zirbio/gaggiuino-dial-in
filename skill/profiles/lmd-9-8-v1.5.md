@@ -24,11 +24,11 @@ The v1.5 revision added an initial phase to handle missed pressure release (e.g.
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 19 g | 18--20 g |
-| Yield | 38 g | 36--40 g |
+| Dose | 18 g | 17--18 g |
+| Yield | 36 g | 34--36 g |
 | Ratio | 1:2 | 1:1.8--1:2.2 |
 | Temperature | 93 °C | 91--95 °C |
-| Shot time | ~30 s | 25--35 s (total, incl. PI) |
+| Shot time | ~40 s | 36--46 s (total, incl. PI) |
 | Basket | Standard (NOT HE) | -- |
 
 **Sette 270Wi grind setting:**

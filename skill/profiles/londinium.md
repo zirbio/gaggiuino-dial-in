@@ -24,8 +24,8 @@ The 45-second declining extraction phase is the heart of this profile. It keeps 
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 18 g | 17--19 g |
-| Yield | 36 g | 34--38 g |
+| Dose | 18 g | 17--18 g |
+| Yield | 36 g | 34--36 g |
 | Ratio | 1:2 | 1:1.8--1:2.2 |
 | Temperature | 93 °C | 88--94 °C |
 | Shot time | ~55 s | 45--65 s (total, incl. PI + soak) |

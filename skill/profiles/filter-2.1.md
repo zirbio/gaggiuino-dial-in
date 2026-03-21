@@ -23,8 +23,8 @@ The low extraction pressure (3 bar) and paper filter produce a clean, sediment-f
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 18 g | 15--20 g |
-| Yield | 90 g | 80--100 g |
+| Dose | 18 g | 15--18 g |
+| Yield | 90 g | 75--90 g |
 | Ratio | 1:5 | 1:4--1:6 |
 | Temperature | 93 °C | 90--96 °C |
 | Shot time | ~90 s | 60--120 s (total) |

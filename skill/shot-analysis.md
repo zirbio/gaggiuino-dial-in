@@ -108,12 +108,12 @@ In pressure-target phases, flow is a dependent variable. In flow-target phases (
 - Extraction: ramps to 7.5 bar (EASE_OUT, 5s), then gently declines to ~6 bar. Flow stays near 3 ml/s limit.
 - Too fine = pressure flat at 7.5, flow pegged at limit. Too coarse = pressure drops below 6 bar quickly.
 
-**LMD 9-8 v1.5 (36-46s, 19g in / 38g out):**
+**LMD 9-8 v1.5 (36-46s, 18g in / 36g out):**
 - PI: flow at 4 ml/s, pressure limited to 2 bar. Soak: pressure drops to ~1 bar (up to 6s).
 - Extraction: ramps to 9 bar (EASE_IN_OUT, 4-5s), holds, drops to 8 bar over 4s, then transitions to flow-driven. Pressure declines naturally in late phases — this is EXPECTED.
 - Too fine = pressure pegged at 9 bar entire shot. The late-shot decline is the hallmark of a well-dialed LMD.
 
-**Londinium (40-55s, 20g in / 40g out):**
+**Londinium (40-55s, 18g in / 36g out):**
 - PI: flow-driven, pressure limited to 4 bar. Soak: free-fall toward 0.7 bar (up to 10s).
 - Extraction: fast rise to 9 bar (1s), holds ~4s, then long smooth decline 9 to 3 bar over 20s (EASE_IN_OUT).
 - The decline should look like a smooth ski slope. Flat at 9 = too fine. Steep drop = too coarse.

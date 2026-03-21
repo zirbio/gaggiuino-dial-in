@@ -24,8 +24,8 @@ The lower peak pressure (7.5 bar) and long bloom work together to extract evenly
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 18 g | 16--20 g |
-| Yield | 50 g | 45--55 g |
+| Dose | 18 g | 16--18 g |
+| Yield | 50 g | 45--50 g |
 | Ratio | 1:2.8 | 1:2.5--1:3 |
 | Temperature | 93 °C | 88--95 °C |
 | Shot time | ~50 s | 40--65 s (total, incl. PI + bloom) |
