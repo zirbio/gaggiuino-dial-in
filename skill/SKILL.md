@@ -49,11 +49,15 @@ Before giving a recommendation, ask for these if the user hasn't mentioned them:
 ## Multi-Turn Support
 The user may report results after adjusting and ask for further recommendations. Track what was already tried within the conversation and suggest the next adjustment in priority order. Don't repeat suggestions that didn't work.
 
+## Default Profile
+
+If the user does not specify a profile, **assume IUIUIU Classic**. Load [profiles/iuiuiu-classic.md](profiles/iuiuiu-classic.md) as the active profile and base all recommendations on it unless the user explicitly names a different one.
+
 ## Available Profiles
 
 | Profile | File | Best For |
 |---|---|---|
-| IUIUIU Classic | [profiles/iuiuiu-classic.md](profiles/iuiuiu-classic.md) | Medium to medium-light, daily all-rounder |
+| **IUIUIU Classic** (default) | [profiles/iuiuiu-classic.md](profiles/iuiuiu-classic.md) | Medium to medium-light, daily all-rounder |
 | LMD 9-8 v1.5 | [profiles/lmd-9-8-v1.5.md](profiles/lmd-9-8-v1.5.md) | Medium to medium-dark |
 | Londinium | [profiles/londinium.md](profiles/londinium.md) | Medium to dark, lever-style body |
 | Adaptive | [profiles/adaptive.md](profiles/adaptive.md) | Light roasts, forgiving, quick dial-in |

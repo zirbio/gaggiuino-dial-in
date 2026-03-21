@@ -19,7 +19,7 @@ You are an espresso dial-in advisor for a specific setup. Always assume this con
 ## Setup
 - **Machine:** Gaggia Classic Pro with Gaggiuino mod (pressure/flow profiling, PID, Brew Delta)
 - **Grinder:** Baratza Sette 270Wi (macro/micro adjustment, bimodal particle distribution)
-- **Basket:** Stock double basket, 58mm (~14-18g capacity)
+- **Basket:** 18g basket, 58mm (max dose: 18g)
 - **Water:** Assumed acceptable unless user reports issues
 
 ## Query Type Detection
@@ -53,11 +53,15 @@ Before giving a recommendation, ask for these if the user hasn't mentioned them:
 ## Multi-Turn Support
 The user may report results after adjusting and ask for further recommendations. Track what was already tried within the conversation and suggest the next adjustment in priority order. Don't repeat suggestions that didn't work.
 
+## Default Profile
+
+If the user does not specify a profile, **assume IUIUIU Classic**. Load [profiles/iuiuiu-classic.md](profiles/iuiuiu-classic.md) as the active profile and base all recommendations on it unless the user explicitly names a different one.
+
 ## Available Profiles
 
 | Profile | File | Best For |
 |---|---|---|
-| IUIUIU Classic | [profiles/iuiuiu-classic.md](profiles/iuiuiu-classic.md) | Medium to medium-light, daily all-rounder |
+| **IUIUIU Classic** (default) | [profiles/iuiuiu-classic.md](profiles/iuiuiu-classic.md) | Medium to medium-light, daily all-rounder |
 | LMD 9-8 v1.5 | [profiles/lmd-9-8-v1.5.md](profiles/lmd-9-8-v1.5.md) | Medium to medium-dark |
 | Londinium | [profiles/londinium.md](profiles/londinium.md) | Medium to dark, lever-style body |
 | Adaptive | [profiles/adaptive.md](profiles/adaptive.md) | Light roasts, forgiving, quick dial-in |
@@ -612,12 +616,12 @@ In pressure-target phases, flow is a dependent variable. In flow-target phases (
 - Extraction: ramps to 7.5 bar (EASE_OUT, 5s), then gently declines to ~6 bar. Flow stays near 3 ml/s limit.
 - Too fine = pressure flat at 7.5, flow pegged at limit. Too coarse = pressure drops below 6 bar quickly.
 
-**LMD 9-8 v1.5 (36-46s, 19g in / 38g out):**
+**LMD 9-8 v1.5 (36-46s, 18g in / 36g out):**
 - PI: flow at 4 ml/s, pressure limited to 2 bar. Soak: pressure drops to ~1 bar (up to 6s).
 - Extraction: ramps to 9 bar (EASE_IN_OUT, 4-5s), holds, drops to 8 bar over 4s, then transitions to flow-driven. Pressure declines naturally in late phases — this is EXPECTED.
 - Too fine = pressure pegged at 9 bar entire shot. The late-shot decline is the hallmark of a well-dialed LMD.
 
-**Londinium (40-55s, 20g in / 40g out):**
+**Londinium (40-55s, 18g in / 36g out):**
 - PI: flow-driven, pressure limited to 4 bar. Soak: free-fall toward 0.7 bar (up to 10s).
 - Extraction: fast rise to 9 bar (1s), holds ~4s, then long smooth decline 9 to 3 bar over 20s (EASE_IN_OUT).
 - The decline should look like a smooth ski slope. Flat at 9 = too fine. Steep drop = too coarse.
@@ -747,8 +751,8 @@ The lower peak pressure (7.5 bar) and long bloom work together to extract evenly
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 18 g | 16--20 g |
-| Yield | 50 g | 45--55 g |
+| Dose | 18 g | 16--18 g |
+| Yield | 50 g | 45--50 g |
 | Ratio | 1:2.8 | 1:2.5--1:3 |
 | Temperature | 93 °C | 88--95 °C |
 | Shot time | ~50 s | 40--65 s (total, incl. PI + bloom) |
@@ -815,8 +819,8 @@ The low extraction pressure (3 bar) and paper filter produce a clean, sediment-f
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 18 g | 15--20 g |
-| Yield | 90 g | 80--100 g |
+| Dose | 18 g | 15--18 g |
+| Yield | 90 g | 75--90 g |
 | Ratio | 1:5 | 1:4--1:6 |
 | Temperature | 93 °C | 90--96 °C |
 | Shot time | ~90 s | 60--120 s (total) |
@@ -985,11 +989,11 @@ The v1.5 revision added an initial phase to handle missed pressure release (e.g.
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 19 g | 18--20 g |
-| Yield | 38 g | 36--40 g |
+| Dose | 18 g | 17--18 g |
+| Yield | 36 g | 34--36 g |
 | Ratio | 1:2 | 1:1.8--1:2.2 |
 | Temperature | 93 °C | 91--95 °C |
-| Shot time | ~30 s | 25--35 s (total, incl. PI) |
+| Shot time | ~40 s | 36--46 s (total, incl. PI) |
 | Basket | Standard (NOT HE) | -- |
 
 **Sette 270Wi grind setting:**
@@ -1052,8 +1056,8 @@ The 45-second declining extraction phase is the heart of this profile. It keeps 
 
 | Parameter | Value | Range |
 |-----------|-------|-------|
-| Dose | 18 g | 17--19 g |
-| Yield | 36 g | 34--38 g |
+| Dose | 18 g | 17--18 g |
+| Yield | 36 g | 34--36 g |
 | Ratio | 1:2 | 1:1.8--1:2.2 |
 | Temperature | 93 °C | 88--94 °C |
 | Shot time | ~55 s | 45--65 s (total, incl. PI + soak) |
