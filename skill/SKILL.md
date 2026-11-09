@@ -3,9 +3,10 @@ name: dial-in
 description: >
   Recommend espresso extraction adjustments for Gaggia Classic Pro + Gaggiuino.
   Use when asking about espresso profiles, grind settings, troubleshooting shots,
-  or analyzing shot photos. Supports IUIUIU Classic, LMD 9-8, Londinium,
-  Adaptive, Blooming Espresso, and Filter 2.1 profiles with Baratza Sette 270Wi.
-argument-hint: [describe your coffee, problem, or attach a shot photo]
+  analyzing shot photos, or analyzing the latest shots synced to GLP (Gaggiuino
+  Local Profiler). Supports IUIUIU Classic, LMD 9-8, Londinium, Adaptive,
+  Blooming Espresso, and Filter 2.1 profiles with Baratza Sette 270Wi.
+argument-hint: [describe your coffee or problem, attach a shot photo, or ask to analyze your last shot]
 ---
 
 # Gaggia Dial-In Assistant
@@ -24,13 +25,17 @@ Identify the user's intent and load the appropriate knowledge:
 
 | If the user... | This is... | Load these files |
 |---|---|---|
+| Asks about "my last shot", recent shots or how a bean is going (GLP tools available) | **Shot analysis from GLP** | [glp-shot-data](glp-shot-data.md) + [shot-analysis](shot-analysis.md) + relevant [profile](profiles/) |
 | Attaches a shot photo/screenshot | **Shot analysis** | [shot-analysis](shot-analysis.md) + relevant [profile](profiles/) |
 | Describes a taste problem (sour, bitter, flat, etc.) | **Troubleshooting** | [troubleshooting](troubleshooting.md) + active [profile](profiles/) + [grinder](grinder-baratza-sette-270wi.md) |
 | Asks what profile/settings for a new coffee | **Recommendation** | [coffee-fundamentals](coffee-fundamentals.md) + [grinder](grinder-baratza-sette-270wi.md) + recommended [profile](profiles/) |
 | Asks about differences between profiles or concepts | **Informational** | Relevant [profiles](profiles/) and/or [coffee-fundamentals](coffee-fundamentals.md) |
 
+## Shot Data from GLP
+If the `glp` MCP tools (`mcp__glp__*`) are available, read shots, beans and the user's notes from there instead of asking the user to describe them. Follow [glp-shot-data](glp-shot-data.md). Only ask for what GLP does not have.
+
 ## Always Ask If Not Provided
-Before giving a recommendation, ask for these if the user hasn't mentioned them:
+Before giving a recommendation, ask for these if the user hasn't mentioned them and GLP doesn't have them:
 - **Roast level** (light, medium, dark)
 - **Freshness** (days since roast)
 - **Process** (washed, natural, honey) — if the user knows it
