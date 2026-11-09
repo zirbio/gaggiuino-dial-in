@@ -46,6 +46,20 @@ Then use it with:
 /dial-in my coffee is a light roast Ethiopian natural, what profile and settings should I use?
 ```
 
+### Optional: read shots from GLP
+
+[GLP (Gaggiuino Local Profiler)](https://github.com/mxkissnr/gaggiuino-local-profiler) syncs every shot from the machine and stores your beans and tasting notes locally. Its built-in MCP server lets the skill read your shots directly, so you can just ask it to analyze your last shot.
+
+1. Run GLP (Home Assistant app or standalone Docker) and add your machine under **Settings → Machines**.
+2. Turn on **Settings → AI assistants (MCP)**. Leave the write tools off; the skill only reads.
+3. Register the server in Claude Code under the name `glp`, keeping the token out of the config file with a headers helper that prints `{"X-GLP-Token":"<token>"}`:
+
+   ```bash
+   claude mcp add-json --scope user glp '{"type":"http","url":"http://127.0.0.1:8099/api/mcp","headersHelper":"/path/to/glp-mcp-headers"}'
+   ```
+
+The skill uses GLP when its tools are available and falls back to descriptions and photos otherwise. See `skill/glp-shot-data.md`.
+
 ### Claude iOS App (via Projects)
 
 The `ios/` directory contains a consolidated knowledge base file ready to paste into a Claude Project as context. See `ios/dial-in-project-context.md`.
@@ -67,6 +81,11 @@ The `ios/` directory contains a consolidated knowledge base file ready to paste 
 /dial-in [attach photo] What do you see in this shot? Using Londinium profile.
 ```
 
+**Analyze your latest shot from GLP:**
+```
+/dial-in Analyze my last shot
+```
+
 **Learn about profiles:**
 ```
 /dial-in What's the difference between IUIUIU Classic and Blooming Espresso?
@@ -82,6 +101,7 @@ The `ios/` directory contains a consolidated knowledge base file ready to paste 
 │   ├── grinder-baratza-sette-270wi.md
 │   ├── troubleshooting.md
 │   ├── shot-analysis.md
+│   ├── glp-shot-data.md    # Reading shots from GLP via MCP
 │   └── profiles/           # Per-profile knowledge
 │       ├── iuiuiu-classic.md
 │       ├── lmd-9-8-v1.5.md
