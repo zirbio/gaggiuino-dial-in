@@ -5,7 +5,8 @@ description: >
   Use when asking about espresso profiles, grind settings, troubleshooting shots,
   analyzing shot photos, or analyzing the latest shots synced to GLP (Gaggiuino
   Local Profiler). Supports IUIUIU Classic, LMD 9-8, Londinium, Adaptive,
-  Blooming Espresso, and Filter 2.1 profiles with Baratza Sette 270Wi.
+  Blooming Espresso, Filter 2.1, and the community profiles Leva 9 and
+  Adaptive Dark Roast v2, with Baratza Sette 270Wi.
 argument-hint: [describe your coffee or problem, attach a shot photo, or ask to analyze your last shot]
 ---
 
@@ -68,6 +69,10 @@ If the user does not specify a profile, **assume IUIUIU Classic**. Load [profile
 | Adaptive | [profiles/adaptive.md](profiles/adaptive.md) | Light roasts, forgiving, quick dial-in |
 | Blooming Espresso | [profiles/blooming-espresso.md](profiles/blooming-espresso.md) | Light roasts, complex single origins |
 | Filter 2.1 | [profiles/filter-2.1.md](profiles/filter-2.1.md) | Filter-style from espresso machine |
+| Leva 9 v0.9 (community) | [profiles/leva-9.md](profiles/leva-9.md) | Medium to medium-dark, lever body, more forgiving than Londinium |
+| Adaptive Dark Roast v2 (community) | [profiles/adaptive-dark-roast-v2.md](profiles/adaptive-dark-roast-v2.md) | Medium-dark to dark, gentle and sweet, short ratio |
+
+Community profiles are imported from the Gaggiuino web UI (**Profiles → Community**). Installed copies get a "(community)" suffix in their name, and the shot history and GLP may show that name.
 
 ## Key Principles
 - **Time is a dependent variable** — never chase a specific shot time. Adjust grind, dose, temp, and ratio; time follows.

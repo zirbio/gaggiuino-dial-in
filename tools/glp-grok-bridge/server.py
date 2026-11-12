@@ -1,14 +1,19 @@
-"""Servidor MCP mínimo que permite a un asistente asignar café y dosis a un shot de GLP.
+"""Servidor MCP mínimo que completa lo que el MCP de GLP no ofrece a un asistente.
 
-El MCP de GLP 3.7.0 solo deja cambiar puntuación, notas y molienda. Este puente
-añade una única herramienta, ``assign_shot_coffee``, que liga el shot a un café
-de la biblioteca (para que GLP descuente stock y lo cuente en sus estadísticas)
-y opcionalmente fija la dosis. No toca nada más.
+El MCP de GLP 3.7.0 solo deja cambiar puntuación, notas y molienda, y no guarda
+el perfil con el que se tiró cada shot. Este puente añade:
+
+* ``assign_shot_coffee``: liga el shot a un café de la biblioteca (para que GLP
+  descuente stock y lo cuente en sus estadísticas) y opcionalmente fija la dosis.
+* ``get_shot_profile`` y ``list_machine_profiles`` (solo si hay MACHINE_URL):
+  leen de la Gaggiuino el perfil exacto de un shot y los perfiles instalados.
+  Son de solo lectura: nunca cambian nada en la máquina.
 
 Solo usa la biblioteca estándar. Configuración por entorno:
-  GLP_URL    URL base de GLP (por defecto http://glp:8099)
-  GLP_TOKEN  token de la API de GLP (obligatorio)
-  PORT       puerto de escucha (por defecto 8200)
+  GLP_URL      URL base de GLP (por defecto http://glp:8099)
+  GLP_TOKEN    token de la API de GLP (obligatorio)
+  MACHINE_URL  URL base de la Gaggiuino (opcional; sin ella no se ofrecen las herramientas de máquina)
+  PORT         puerto de escucha (por defecto 8200)
 """
 
 from __future__ import annotations
@@ -25,7 +30,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
 SERVER_NAME = "glp-grok-bridge"
-SERVER_VERSION = "1.0.0"
+SERVER_VERSION = "1.1.0"
 SUPPORTED_PROTOCOLS = ("2025-06-18", "2025-03-26", "2024-11-05")
 LOCAL_TZ = zoneinfo.ZoneInfo("Europe/Madrid")
 MIN_DOSE_G = 5.0
@@ -71,8 +76,88 @@ ASSIGN_TOOL = {
 }
 
 
+READ_ONLY_ANNOTATIONS = {
+    "readOnlyHint": True,
+    "destructiveHint": False,
+    "idempotentHint": True,
+    "openWorldHint": False,
+}
+
+SHOT_PROFILE_TOOL = {
+    "name": "get_shot_profile",
+    "title": "Profile used for a shot",
+    "description": (
+        "Read from the Gaggiuino machine the exact profile an espresso shot was pulled with: "
+        "profile name, water temperature, stop-on-weight and every phase (target, curve, limit, "
+        "stop conditions). GLP does not store the profile name, so use this before analysing a "
+        "shot's curves. Shot ids are the same as in GLP. Omit shot_id for the most recent shot. "
+        "Read-only."
+    ),
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "shot_id": {
+                "type": "integer",
+                "description": "Shot id (same as GLP's list_shots); omit for the most recent shot",
+            },
+        },
+        "additionalProperties": False,
+    },
+    "annotations": {"title": "Profile used for a shot", **READ_ONLY_ANNOTATIONS},
+}
+
+MACHINE_PROFILES_TOOL = {
+    "name": "list_machine_profiles",
+    "title": "Profiles installed on the machine",
+    "description": (
+        "List the profiles installed on the Gaggiuino machine and which one is active. Only "
+        "recommend profiles from this list, or say the user has to import it first from the "
+        "Gaggiuino web UI (Profiles > Community). Read-only."
+    ),
+    "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
+    "annotations": {"title": "Profiles installed on the machine", **READ_ONLY_ANNOTATIONS},
+}
+
+
 class ToolError(Exception):
     """Error que se devuelve al asistente como resultado de la herramienta."""
+
+
+class MachineClient:
+    """Lectura de la API web de la Gaggiuino. Solo hace GET."""
+
+    def __init__(self, base_url: str, timeout: float = 10.0) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
+
+    def _get(self, path: str, not_found: str | None = None) -> Any:
+        try:
+            with urllib.request.urlopen(self.base_url + path, timeout=self.timeout) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 404 and not_found:
+                raise ToolError(not_found) from exc
+            raise ToolError(f"La Gaggiuino respondió {exc.code} en {path}") from exc
+        except (urllib.error.URLError, TimeoutError) as exc:
+            raise ToolError("No se pudo conectar con la Gaggiuino. ¿Está encendida y en la red de casa?") from exc
+        except json.JSONDecodeError as exc:
+            raise ToolError(f"La Gaggiuino devolvió una respuesta no válida en {path}") from exc
+
+    def latest_shot_id(self) -> int:
+        data = self._get("/api/shots/latest")
+        if isinstance(data, list) and data and isinstance(data[0].get("lastShotId"), int):
+            return int(data[0]["lastShotId"])
+        raise ToolError("La Gaggiuino no tiene ningún shot.")
+
+    def shot(self, shot_id: int) -> dict[str, Any]:
+        data = self._get(f"/api/shots/{shot_id}", not_found=f"No existe el shot {shot_id} en la Gaggiuino.")
+        if not isinstance(data, dict) or not isinstance(data.get("profile"), dict):
+            raise ToolError(f"No existe el shot {shot_id} en la Gaggiuino.")
+        return data
+
+    def profiles(self) -> list[dict[str, Any]]:
+        data = self._get("/api/profiles/all")
+        return list(data) if isinstance(data, list) else []
 
 
 class GlpClient:
@@ -183,7 +268,106 @@ def assign_shot_coffee(client: GlpClient, args: dict[str, Any]) -> str:
     return "".join(parts) + "."
 
 
-def handle_rpc(message: Any, client: GlpClient) -> dict[str, Any] | None:
+STOP_LABELS = (
+    ("pressureAbove", "presión > {} bar"),
+    ("pressureBelow", "presión < {} bar"),
+    ("flowAbove", "flujo > {} ml/s"),
+    ("flowBelow", "flujo < {} ml/s"),
+    ("weight", "{} g en taza"),
+    ("waterPumpedInPhase", "{} ml bombeados"),
+)
+
+
+def _num(value: Any) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def format_phase(index: int, phase: dict[str, Any]) -> str:
+    kind = phase.get("type")
+    target = phase.get("target") or {}
+    unit = "bar" if kind == "PRESSURE" else "ml/s"
+    label = "presión" if kind == "PRESSURE" else "flujo"
+    start, end = _num(target.get("start")), _num(target.get("end"))
+    if end is None:
+        end = 0.0
+    if start is not None and start != end and start != 0:
+        text = f"{label} {format_number(start)} → {format_number(end)} {unit}"
+    else:
+        text = f"{label} {format_number(end)} {unit}"
+    duration = _num(target.get("time"))
+    curve = target.get("curve")
+    if duration and duration > 0:
+        text += f" en {format_number(duration / 1000)} s"
+        if curve and curve != "INSTANT":
+            text += f" ({curve})"
+    limit = _num(phase.get("restriction"))
+    if limit:
+        text += f", límite {format_number(limit)} {'ml/s' if kind == 'PRESSURE' else 'bar'}"
+    stops = phase.get("stopConditions") or {}
+    conditions = []
+    stop_time = _num(stops.get("time"))
+    if stop_time:
+        conditions.append(f"{format_number(stop_time / 1000)} s")
+    for key, template in STOP_LABELS:
+        value = _num(stops.get(key))
+        if value:
+            conditions.append(template.format(format_number(value)))
+    text += "; termina con " + " o ".join(conditions) if conditions else "; hasta el final del shot"
+    name = phase.get("name")
+    prefix = f"{index}. {name}: " if name else f"{index}. "
+    return prefix + text
+
+
+def describe_profile(profile: dict[str, Any]) -> list[str]:
+    lines = [f"Perfil: {profile.get('name') or '(sin nombre)'}"]
+    temp = _num(profile.get("waterTemperature"))
+    if temp:
+        lines.append(f"Temperatura del agua: {format_number(temp)} °C")
+    stops = profile.get("globalStopConditions") or {}
+    weight = _num(stops.get("weight"))
+    lines.append(f"Para en: {format_number(weight)} g" if weight else "Para en: sin stop-on-weight (se para a mano)")
+    recipe = profile.get("recipe") or {}
+    dose, ratio = _num(recipe.get("coffeeIn")), _num(recipe.get("ratio"))
+    if dose or ratio:
+        lines.append("Receta guardada: " + ", ".join(
+            part for part in (
+                f"{format_number(dose)} g de café" if dose else "",
+                f"ratio 1:{format_number(ratio)}" if ratio else "",
+            ) if part
+        ))
+    lines.append("Fases:")
+    lines.extend("  " + format_phase(i, p) for i, p in enumerate(profile.get("phases") or [], 1))
+    return lines
+
+
+def get_shot_profile(machine: MachineClient, args: dict[str, Any]) -> str:
+    shot_id = args.get("shot_id")
+    if shot_id is None:
+        shot_id = machine.latest_shot_id()
+    elif isinstance(shot_id, bool) or not isinstance(shot_id, int):
+        raise ToolError("shot_id debe ser un número entero.")
+    shot = machine.shot(shot_id)
+    header = f"Shot #{shot_id} ({format_local_time(shot.get('timestamp'))}"
+    duration = _num(shot.get("duration"))
+    if duration:
+        header += f", {format_number(duration / 10)} s"
+    return "\n".join([header + ")"] + describe_profile(shot["profile"]))
+
+
+def list_machine_profiles(machine: MachineClient, args: dict[str, Any]) -> str:
+    profiles = machine.profiles()
+    if not profiles:
+        return "La Gaggiuino no tiene perfiles instalados."
+    lines = ["Perfiles instalados en la Gaggiuino:"]
+    for p in profiles:
+        active = str(p.get("selected")).lower() == "true"
+        lines.append(f"- {p.get('name')}" + (" (activo)" if active else ""))
+    return "\n".join(lines)
+
+
+def handle_rpc(message: Any, client: GlpClient, machine: MachineClient | None = None) -> dict[str, Any] | None:
     if not isinstance(message, dict) or message.get("jsonrpc") != "2.0":
         return _error(None, -32600, "Invalid Request")
     method = message.get("method")
@@ -199,17 +383,26 @@ def handle_rpc(message: Any, client: GlpClient) -> dict[str, Any] | None:
             "protocolVersion": version,
             "capabilities": {"tools": {"listChanged": False}},
             "serverInfo": {"name": SERVER_NAME, "version": SERVER_VERSION},
-            "instructions": "Assigns a coffee from the GLP library (and optionally the dose) to an espresso shot.",
+            "instructions": (
+                "Assigns a coffee from the GLP library (and optionally the dose) to an espresso shot."
+                + (" Reads, without changing anything, the profile each shot was pulled with and the "
+                   "profiles installed on the Gaggiuino." if machine else "")
+            ),
         })
     if method == "ping":
         return _result(msg_id, {})
+    tools: dict[str, tuple[dict[str, Any], Any]] = {ASSIGN_TOOL["name"]: (ASSIGN_TOOL, lambda a: assign_shot_coffee(client, a))}
+    if machine is not None:
+        tools[SHOT_PROFILE_TOOL["name"]] = (SHOT_PROFILE_TOOL, lambda a: get_shot_profile(machine, a))
+        tools[MACHINE_PROFILES_TOOL["name"]] = (MACHINE_PROFILES_TOOL, lambda a: list_machine_profiles(machine, a))
     if method == "tools/list":
-        return _result(msg_id, {"tools": [ASSIGN_TOOL]})
+        return _result(msg_id, {"tools": [tool for tool, _ in tools.values()]})
     if method == "tools/call":
-        if params.get("name") != ASSIGN_TOOL["name"]:
+        entry = tools.get(params.get("name"))
+        if entry is None:
             return _error(msg_id, -32602, f"Unknown tool: {params.get('name')}")
         try:
-            text = assign_shot_coffee(client, params.get("arguments") or {})
+            text = entry[1](params.get("arguments") or {})
             return _result(msg_id, {"content": [{"type": "text", "text": text}], "isError": False})
         except ToolError as exc:
             return _result(msg_id, {"content": [{"type": "text", "text": str(exc)}], "isError": True})
@@ -224,7 +417,7 @@ def _error(msg_id: Any, code: int, message: str) -> dict[str, Any]:
     return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": code, "message": message}}
 
 
-def make_handler(client: GlpClient) -> type[BaseHTTPRequestHandler]:
+def make_handler(client: GlpClient, machine: MachineClient | None = None) -> type[BaseHTTPRequestHandler]:
     class Handler(BaseHTTPRequestHandler):
         server_version = SERVER_NAME
 
@@ -244,7 +437,7 @@ def make_handler(client: GlpClient) -> type[BaseHTTPRequestHandler]:
             if isinstance(message, list):
                 self._send(400, _error(None, -32600, "Batch requests are not supported"))
                 return
-            response = handle_rpc(message, client)
+            response = handle_rpc(message, client, machine)
             if response is None:
                 self._send(202, None)
             else:
@@ -277,8 +470,10 @@ def main() -> None:
     if not token:
         sys.exit("GLP_TOKEN es obligatorio")
     client = GlpClient(os.environ.get("GLP_URL", "http://glp:8099"), token)
+    machine_url = os.environ.get("MACHINE_URL", "").strip()
+    machine = MachineClient(machine_url) if machine_url else None
     port = int(os.environ.get("PORT", "8200"))
-    ThreadingHTTPServer(("0.0.0.0", port), make_handler(client)).serve_forever()
+    ThreadingHTTPServer(("0.0.0.0", port), make_handler(client, machine)).serve_forever()
 
 
 if __name__ == "__main__":

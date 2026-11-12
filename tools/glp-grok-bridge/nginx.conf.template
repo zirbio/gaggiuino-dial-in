@@ -1,6 +1,6 @@
 # Proxy público mínimo para Grok (vía Tailscale Funnel). Solo expone, bajo una ruta secreta:
 #   /<clave>/mcp        -> MCP de GLP (lectura + anotar puntuación, notas y molienda)
-#   /<clave>/extra/mcp  -> este puente (asignar café y dosis a un shot)
+#   /<clave>/extra/mcp  -> este puente (asignar café y dosis; leer perfiles de la Gaggiuino)
 # Todo lo demás devuelve 404. Las variables GLP_* se rellenan al arrancar el contenedor.
 server {
     listen 8100;
