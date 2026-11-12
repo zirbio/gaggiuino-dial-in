@@ -8,7 +8,8 @@ description: >
   Recommend espresso extraction adjustments for Gaggia Classic Pro + Gaggiuino.
   Use when asking about espresso profiles, grind settings, troubleshooting shots,
   or analyzing shot photos. Supports IUIUIU Classic, LMD 9-8, Londinium,
-  Adaptive, Blooming Espresso, and Filter 2.1 profiles with Baratza Sette 270Wi.
+  Adaptive, Blooming Espresso, Filter 2.1, and the community profiles Leva 9
+  and Adaptive Dark Roast v2, with Baratza Sette 270Wi.
 argument-hint: [describe your coffee, problem, or attach a shot photo]
 ---
 
@@ -67,6 +68,10 @@ If the user does not specify a profile, **assume IUIUIU Classic**. Load [profile
 | Adaptive | [profiles/adaptive.md](profiles/adaptive.md) | Light roasts, forgiving, quick dial-in |
 | Blooming Espresso | [profiles/blooming-espresso.md](profiles/blooming-espresso.md) | Light roasts, complex single origins |
 | Filter 2.1 | [profiles/filter-2.1.md](profiles/filter-2.1.md) | Filter-style from espresso machine |
+| Leva 9 v0.9 (community) | [profiles/leva-9.md](profiles/leva-9.md) | Medium to medium-dark, lever body, more forgiving than Londinium |
+| Adaptive Dark Roast v2 (community) | [profiles/adaptive-dark-roast-v2.md](profiles/adaptive-dark-roast-v2.md) | Medium-dark to dark, gentle and sweet, short ratio |
+
+Community profiles are imported from the Gaggiuino web UI (**Profiles → Community**). Installed copies get a "(community)" suffix in their name, and the shot history may show that name.
 
 ## Key Principles
 - **Time is a dependent variable** — never chase a specific shot time. Adjust grind, dose, temp, and ratio; time follows.
@@ -333,8 +338,10 @@ These are approximations. Actual settings depend on coffee origin, roast level, 
 | ------------------- | --------------------- | ------------------------------------------------------------ |
 | IUIUIU Classic      | 7-12                  | Good preinfusion helps; grind fine. Start at 9E.             |
 | LMD 9-8 v1.5        | 8-13                  | Long preinfusion; start slightly coarser than IUIUIU.        |
-| Londinium           | 7-12                  | Similar to IUIUIU, lever-style extraction. Start at 9E.     |
+| Londinium           | 7-12                  | Lever-style extraction. Start at 9E; usually coarser than IUIUIU. |
+| Leva 9 (community)  | 7-12                  | Lever emulation. Start at 9E or at the Londinium setting.   |
 | Adaptive            | 8-14                  | Designed to be forgiving; wider usable range. Start at 10E.  |
+| Adaptive Dark Roast v2 (community) | 8-14     | As Adaptive. Start at 10E and go finer.                      |
 | Blooming Espresso   | 9-14                  | Long bloom phase reduces resistance; can go coarser.         |
 | Filter 2.1          | 14-20                 | Much coarser than espresso; paper filter further reduces resistance. |
 
@@ -482,6 +489,9 @@ Symptom-first decision tree for diagnosing and fixing espresso shots on a Gaggia
 | LMD 9-8 | Pressure pegged at limit entire shot | Too fine. Pressure decline toward end of shot is normal and expected. |
 | Londinium | Shot takes 3+ minutes | Using the same grind as IUIUIU — Londinium needs a different (usually coarser) setting. Very sensitive to small changes. |
 | Adaptive | Pressure stays pegged flat | Too fine. Should see a mountain/pyramid shape on the pressure graph. |
+| Leva 9 | Last phase runs on at 4.5 bar and the cup overflows | The community profile has no stop-on-weight. Set one (36-40 g). |
+| Leva 9 | Decline much faster or slower than the cup weight suggests | Steps end on calculated pumped water. Check PZ calibration. |
+| Adaptive Dark Roast v2 | Pressure pinned at 9 bar | Too fine. The flow-limited extraction should give a descending pressure curve. |
 | Blooming | Phases getting skipped | Jumpy scales triggering weight-based phase transitions early. Remove weight conditions from phases 1-2 or tare constantly. |
 | Filter 2.1 | Shot runs too hot | Normal for long extractions. Use a significantly coarser grind than espresso (macro 14-20). |
 
@@ -501,8 +511,8 @@ Symptom-first decision tree for diagnosing and fixing espresso shots on a Gaggia
 |---|---|
 | Light | Adaptive, Blooming, Zer0 |
 | Medium / Medium-Light | Adaptive, IUIUIU Classic |
-| Medium-Dark | LMD 9-8, IUIUIU Classic, Londinium |
-| Dark | Londinium, LMD 9-8, Stock 9-bar, Adaptive (with lower temp) |
+| Medium-Dark | LMD 9-8, IUIUIU Classic, Londinium, Leva 9 |
+| Dark | Londinium, LMD 9-8, Leva 9, Stock 9-bar, Adaptive Dark Roast v2 |
 
 ---
 
@@ -536,7 +546,7 @@ The pressure curve is the primary diagnostic tool. Its shape should match the pr
 
 **Preinfusion (first 5-20 seconds):**
 - Pressure rises gradually as water saturates the puck.
-- Preinfusion pressure limits by profile: IUIUIU/Londinium 4 bar, Adaptive 3 bar, LMD 2 bar, Blooming 7 bar.
+- Preinfusion pressure limits by profile: IUIUIU/Londinium 4 bar, Adaptive 3 bar, LMD 2 bar, Blooming 7 bar, Leva 9 3 bar (hold), Adaptive Dark Roast v2 6 bar (fill) then 2 bar (bloom).
 - Builds TOO FAST (hits limit in 2-3s) = too fine. Builds TOO SLOW (barely rises after 10s) = too coarse.
 
 **Ramp:** should follow the profile's curve type (EASE_OUT, LINEAR, or EASE_IN_OUT). Smooth ramp = good puck integrity. Erratic movement = distribution issues.
@@ -548,6 +558,8 @@ The pressure curve is the primary diagnostic tool. Its shape should match the pr
 | IUIUIU Classic | 7.5 bar | Declines 7.5 to 6 bar | 3 ml/s |
 | LMD 9-8 v1.5 | 9 bar | 9 bar ~5s, drops to 8 bar, then flow-driven decline | 3.5 then 2 ml/s |
 | Londinium | 9 bar | Holds ~4s, then long decline 9 to 3 bar over 20s | 3 ml/s |
+| Leva 9 | 9 bar | Stepped decline 9 to 4.5 bar; each 0.3 bar step ends after 3 ml pumped, so the decline speed follows the flow | 3 ml/s |
+| Adaptive Dark Roast v2 | 9 bar cap | Flow ramps 0-4 ml/s (EASE_IN, 60s); pressure should peak then descend | 9 bar cap |
 | Adaptive | 9 bar cap | Mountain/pyramid: rises, peaks, naturally declines | Flow ramps 0-2.5 ml/s |
 | Blooming | 7-9 bar cap | Long low-pressure soak, then flow-driven at 2 ml/s | 9 bar cap |
 | Filter 2.1 | ~1 bar | Very low, sustained. Flow-driven at 0.2-3 ml/s | 9 bar cap (never reached) |
@@ -626,6 +638,16 @@ In pressure-target phases, flow is a dependent variable. In flow-target phases (
 - Extraction: fast rise to 9 bar (1s), holds ~4s, then long smooth decline 9 to 3 bar over 20s (EASE_IN_OUT).
 - The decline should look like a smooth ski slope. Flat at 9 = too fine. Steep drop = too coarse.
 
+**Leva 9 (35-60s, 18g in / 36g out, set stop-on-weight: the profile has none):**
+- PI: fill to 1.5 bar, rise to 3 bar, hold 3 bar up to 7s or 10g in the cup.
+- Extraction: ramp to 9 bar (4s), then a staircase of 0.3 bar steps down to 4.5 bar. Steps end on water pumped, not time.
+- Steps advancing at a steady pace with flow 1-2.5 ml/s = in range. Decline stalls near 9 bar with very low flow = too fine. Pressure below the steps with flow at the 3 ml/s limit = too coarse.
+
+**Adaptive Dark Roast v2 (30-45s, 18g in / 32g out, 90 °C):**
+- PI: fast fill to 6 bar, bloom at 2 bar for 6s, ramp to 9 bar with flow limited to 2 ml/s.
+- Extraction: flow-driven 0-4 ml/s (EASE_IN), 9 bar cap. Pressure peaks, then descends as flow rises.
+- Flat line at 9 bar = too fine. Pressure never above 3-4 bar = too coarse.
+
 **Adaptive (25-45s, 15g in / 33g out):**
 - PI: flow 7 ml/s, pressure limited to 3 bar. Bloom: holds 3 bar for 6s. Ramp: 0-9 bar over 5s (LINEAR).
 - Extraction: flow ramps 0-2.5 ml/s over 25s. Pressure forms a MOUNTAIN/PYRAMID — peaks at 7-9 bar, declines to 3-5 bar.
@@ -655,6 +677,71 @@ In pressure-target phases, flow is a dependent variable. In flow-target phases (
 **Cropped (missing curves):** work with what is visible. Pressure alone is sufficient for grind diagnosis. Flow alone can identify channeling. Temperature alone is least diagnostic.
 
 **Web UI vs. touchscreen:** both valid. Web UI is typically cleaner. Suggest web UI for future analysis if the user has network access.
+
+---
+
+# Adaptive Dark Roast v2 (community)
+
+Listed in the community catalogue as "Adaptive for Dark Roast v2"; the profile is named "Adaptive Dark Roast v2" once installed.
+
+## Description
+
+A community variant of [Adaptive](adaptive.md) for darker roasts. It keeps the Adaptive idea -- a pressurized bloom followed by a flow-driven extraction capped at 9 bar -- but fills to a higher pressure, runs cooler, and controls the extraction by flow so the pressure curve descends. The author's description: "Extraction phase is flow limited to allow for a descending pressure curve which makes for a gentler and sweeter shot. v1 is body focused whereas v2 will get you more flavor separation."
+
+**Phases** (from `Adaptive for Dark Roast v2.json` in the community repository):
+
+1. **Fill (PRESSURE 6 bar)** -- Pump fills at full flow until pressure exceeds 6 bar, or 10 s pass.
+2. **Bloom (PRESSURE 2 bar)** -- Holds 2 bar for 6 s.
+3. **Ramp (PRESSURE 0 → 9 bar, LINEAR 5 s)** -- Flow limited to 2 ml/s. Ends after 7 s, or as soon as flow exceeds 3 ml/s.
+4. **Extraction (FLOW 0 → 4 ml/s, EASE_IN over 60 s)** -- Pressure limited to 9 bar. Flow rises slowly at first and faster later; the puck's resistance sets the pressure, which should peak and then fall. Runs until stop-on-weight.
+
+**Defaults in the JSON:** 90 °C, stop-on-weight 32 g (1:1.8 with 18 g in).
+
+**v1 vs v2:** v1 (88 °C, 34 g) ends with a slow pressure ramp from 0 to 5 bar over 120 s and is the body-focused version. v2 is the flavor-separation version described here.
+
+## Best Suited For
+
+- **Roast level:** Medium-dark to dark.
+- **Decaf (untested hypothesis):** Decafs tend to extract easily and channel more, so a cooler, flow-controlled profile with a descending pressure curve is a reasonable candidate when regular Adaptive pegs at 9 bar. This is reasoning, not community-validated; confirm by taste.
+- **Flavor goals:** Sweet, gentle, low bitterness. Short ratio, so it works well in milk.
+
+## Starting Parameters
+
+| Parameter | Value | Range |
+|-----------|-------|-------|
+| Dose | 18 g | 17--18 g |
+| Yield | 32 g | 32--38 g |
+| Ratio | 1:1.8 | 1:1.8--1:2.1 |
+| Temperature | 90 °C | 86--92 °C |
+| Shot time | ~35 s | 30--45 s (estimate; time is a dependent variable) |
+| Basket | Standard | -- |
+
+**Sette 270Wi grind setting:**
+
+- Macro range: **8--14** (as Adaptive)
+- Starting point: **10E**, then grind finer. As with Adaptive, approach the sweet spot from the coarse side.
+
+## How to Adjust
+
+1. **Grind size** -- Read the pressure during the extraction phase.
+   - Pressure peaks and then declines while flow rises: in range, dial to taste.
+   - Pressure stays pinned at 9 bar while flow lags behind its target: too fine, go 2--4 micro steps coarser.
+   - Pressure barely reaches 3--4 bar and the shot runs fast: too coarse, go finer.
+2. **Ratio** -- Lengthen toward 1:2 if it tastes sour or thin; keep 1:1.8 for body in milk.
+3. **Temperature** -- Lower to 86--88 °C if bitter or ashy; raise to 91--92 °C if flat or sour on a medium-dark coffee.
+4. **Profile change** -- Want more body: v1. Lighter coffee: regular [Adaptive](adaptive.md) or IUIUIU Classic.
+
+## Community Notes
+
+- Shared in the Gaggiuino Discord thread for the Adaptive dark-roast variants (thread linked from the profile's description in the catalogue).
+- The general Adaptive rule still applies: "it shouldn't stay pegged at the pressure limit"; a mountain shape means the grind is right.
+- For dark roasts on Adaptive, the community recommends lower temperatures (85--90 °C) and ratios no longer than about 1:2.
+
+## Common Mistakes
+
+1. **Using the regular Adaptive grind.** The higher fill pressure and flow-limited ramp change the puck resistance; re-dial.
+2. **Judging by the 9 bar cap.** 9 bar is a limit, not a target. Staying there means too fine.
+3. **Jumpy scales.** Stop-on-weight at 32 g is short; a predictive scale that overshoots changes the ratio noticeably.
 
 ---
 
@@ -963,6 +1050,75 @@ Curated from Discord #dialing-n-profiling (Aug 2025 - Mar 2026):
 
 ---
 
+# Leva 9 v0.9 (community)
+
+## Description
+
+A community profile that emulates a spring lever machine. In a real spring lever, pressure does not fall with elapsed time but with the volume of water that leaves the cylinder. Leva 9 copies that: the decline is a chain of small pressure steps, and each step ends after a fixed amount of water has been pumped. A tighter puck lets less water through, so the decline slows down; a looser puck speeds it up. That makes the curve adapt to the grind instead of following a stopwatch, which is why the community calls it more forgiving than Londinium.
+
+**Phases** (from `Leva 9 v0.9.json` in the community repository):
+
+1. **Fill (PRESSURE 1.5 bar)** -- Pump fills the headspace at full flow until pressure exceeds 1.5 bar, 3 g are in the cup, or 10 s pass.
+2. **Rise (PRESSURE 0 → 3 bar, EASE_OUT 2 s)** -- Stops when pressure exceeds 3 bar, 3 g are in the cup, or 10 s pass.
+3. **Hold (PRESSURE 3 bar)** -- Pre-infusion hold. Stops after 7 s or 10 g in the cup.
+4. **Ramp (PRESSURE 0 → 9 bar, EASE_IN_OUT 4 s)** -- Flow limited to 5 ml/s. Ends after 7 ml pumped.
+5. **Spring decline (PRESSURE 9 → 4.5 bar)** -- 12 linear steps of 0.3 bar each. Each step ends after 3 ml pumped. Flow limited to 4 ml/s in the first step and 3 ml/s after that. The last step (4.8 → 4.5 bar) runs until the shot is stopped.
+
+**Defaults in the JSON:** 93 °C. **No stop-on-weight is set** (global stop 0). Set stop-on-weight yourself (36--40 g for 18 g in) or the last phase will keep running at 4.5 bar.
+
+The creator's target: about 40 g in the cup by the time pressure reaches 6 bar.
+
+## Best Suited For
+
+- **Roast level:** Medium to medium-dark. The community lists it with Stock 9 bar, LMD 9-8 and LPD as the profiles to try for medium and darker beans aiming for body.
+- **Origin:** Versatile. One user called a medium-roast Colombian (1700 m, Antioquia) on Leva "absolutely incredible".
+- **Flavor goals:** Lever-style body and sweetness, thicker than IUIUIU Classic. A good fit for milk drinks.
+
+## Starting Parameters
+
+| Parameter | Value | Range |
+|-----------|-------|-------|
+| Dose | 18 g | 17--18 g |
+| Yield | 36 g | 34--40 g (set stop-on-weight: the profile has none) |
+| Ratio | 1:2 | 1:1.9--1:2.2 |
+| Temperature | 93 °C | 90--94 °C |
+| Shot time | ~45 s | 35--60 s (estimate from the phase structure; time is a dependent variable) |
+| Basket | Standard | -- |
+
+**Sette 270Wi grind setting:**
+
+- Macro range: **7--12**
+- Starting point: **9E**, or the setting that already follows the Londinium curve for the same coffee (both peak at 9 bar).
+- Adjust in 1--2 micro steps.
+
+## How to Adjust
+
+Follow this priority order:
+
+1. **Grind size** -- Pressure is the target; read whether the puck can hold it and how fast the decline runs.
+   - Pressure never builds past 2--3 bar in pre-infusion, or falls below the step targets with flow pinned at the 3 ml/s limit: too coarse, go finer. ("Leva is a pressure driven profile and you didn't reach the initial target.")
+   - Pressure follows the steps and flow stays around 1--2.5 ml/s: in range, dial to taste.
+   - Flow stays very low and pressure lingers near 9 bar for a long time (the steps advance by water pumped, so a choked puck stalls the decline): too fine, go coarser.
+2. **Ratio** -- Shorter (1:1.9) for more body in milk, longer (1:2.2) if it tastes under-extracted or lacks sweetness.
+3. **Temperature** -- 94 °C for medium roasts leaning light; 90--91 °C for darker roasts.
+4. **Profile change** -- If it is still harsh or too heavy, try Leva 6 v0.9 from the community catalogue (same idea, starting at 6 bar) or IUIUIU Classic. For more clarity on lighter coffees, Adaptive.
+
+## Community Notes
+
+- "Leva is like Londinium but doesn't have issues if your grind is way off."
+- "Zer0 and Leva are good profiles and also pretty popular. Leva simulates a lever more accurately than Londinium."
+- With step-down baskets and a large headspace, Leva 9 can struggle to fill. "You can just extend the fill phase." With the standard 18 g basket this should not apply.
+- **The profile depends heavily on the calculated pump flow, so PZ calibration matters.** If the decline runs much faster or slower than the cup weight suggests, check the PZ calibration before blaming the grind.
+
+## Common Mistakes
+
+1. **Not setting stop-on-weight.** The community JSON ships without one. Set it before the first shot.
+2. **Using a badly calibrated PZ.** The steps end on pumped water, so a wrong pump-flow estimate distorts the whole curve.
+3. **Starting before the pressure release.** The first two phases stop on pressure; residual pressure after warm-up can skip the fill. Wait for the "dropping beats".
+4. **Jumpy scales.** Phases 1--3 also stop on cup weight (3 g, 3 g, 10 g). A scale that jumps early skips the pre-infusion.
+
+---
+
 # LMD 9-8 v1.5 (Loogle Med-Dark)
 
 ## Description
@@ -1036,14 +1192,15 @@ Follow this priority order -- exhaust each before moving to the next:
 
 A profile that simulates the pressure curve of a Londinium R lever espresso machine. Lever machines produce a naturally declining pressure profile -- high initial pressure that gradually drops as the spring relaxes. This creates a smooth, full-bodied, syrupy shot with a long finish. The Gaggiuino implementation replicates this curve with precise pressure control.
 
-**Phases:**
+**Phases** (from the community JSON; the same definition the machine stores with each shot):
 
-1. **Pre-infusion** -- Flow at 4 ml/s, pressure limited to 3 bar. Stops when pressure exceeds 3 bar, or after 20 s, or after 60 ml of water. Gentle saturation that builds back-pressure naturally.
-2. **Soak** -- Holds 3 bar for 5 s. Lets water distribute evenly through the puck before the main extraction ramp.
-3. **Ramp** -- Pressure rises from 0 to 9 bar over 4 s (LINEAR curve). Simulates the lever being pulled down.
-4. **Extraction** -- Pressure declines from 9 bar to 6 bar over 45 s (LINEAR curve), with flow limited to 3 ml/s. This is the lever spring releasing -- a long, slow, declining extraction that produces the characteristic Londinium body.
+1. **Pre-infusion (FLOW)** -- Flow at 9 ml/s (instant), pressure limited to 4 bar. Stops when pressure exceeds 4 bar, after 10 s, or after 65 ml of water. A fast fill that saturates the headspace and puck quickly.
+2. **Soak (FLOW 0, pump off)** -- Pressure falls freely. Stops when pressure drops below 0.7 bar, or after 10 s. The puck absorbs water and settles before the lever "pull".
+3. **Ramp (PRESSURE)** -- Pressure rises to 9 bar in 1 s (EASE_OUT). Simulates the lever being released onto the puck.
+4. **Peak (PRESSURE)** -- Holds 9 bar for 4 s, flow limited to 3 ml/s.
+5. **Decline (PRESSURE)** -- Pressure falls from 9 to 3 bar over 20 s (EASE_IN_OUT), flow limited to 3 ml/s. It then stays at 3 bar until stop-on-weight. This is the spring relaxing -- the declining pressure pulls sweetness and body without the harshness of sustained high pressure.
 
-The 45-second declining extraction phase is the heart of this profile. It keeps contact time high while progressively reducing pressure, which pulls sweetness and body without the harshness that comes from sustained high pressure.
+**Defaults in the JSON:** 92 °C, stop-on-weight 40 g, recipe 20 g in at 1:2. With the 18 g basket, set stop-on-weight to 36--40 g.
 
 ## Best Suited For
 
@@ -1057,42 +1214,46 @@ The 45-second declining extraction phase is the heart of this profile. It keeps 
 | Parameter | Value | Range |
 |-----------|-------|-------|
 | Dose | 18 g | 17--18 g |
-| Yield | 36 g | 34--36 g |
+| Yield | 36 g | 34--40 g |
 | Ratio | 1:2 | 1:1.8--1:2.2 |
-| Temperature | 93 °C | 88--94 °C |
-| Shot time | ~55 s | 45--65 s (total, incl. PI + soak) |
+| Temperature | 92 °C | 88--94 °C |
+| Shot time | ~45 s | 40--55 s (total, incl. PI + soak) |
 | Basket | Standard | -- |
 
 **Sette 270Wi grind setting:**
 
 - Macro range: **7--12**
 - Starting point: **9E** (macro 9, micro E)
-- This profile requires a noticeably finer grind than most other profiles. Small adjustments (1--2 micro steps) have a large impact.
+- Needs its own grind setting; do not reuse the IUIUIU one. On this setup, one washed Peruvian coffee followed the Londinium curve at 8B and the IUIUIU curve at 5E, so expect to go coarser than IUIUIU, not finer.
+- Small adjustments (1--2 micro steps) have a large impact.
 
 ## How to Adjust
 
 Follow this priority order:
 
-1. **Grind size** -- This profile is very sensitive to grind changes. Adjust in 1-micro-step increments. If the shot gushes and finishes under 40 s total, grind finer. If pressure stays pegged at 9 bar with minimal flow, grind coarser.
+1. **Grind size** -- Pressure is the target and flow is the limit, so read the flow line. Adjust in 1-micro-step increments.
+   - Pressure follows the 9 → 3 bar decline and flow sits around 1--2.5 ml/s: in range, dial to taste.
+   - Pressure falls below the target before or during the decline, with flow pinned at the 3 ml/s limit: too coarse, go finer.
+   - Pressure follows the target but flow stays under ~1 ml/s and the shot drags well past 55 s: too fine, go coarser.
 2. **Ratio** -- For more sweetness and body, pull shorter (1:1.8). For more clarity, pull longer (1:2.2).
 3. **Temperature** -- For dark roasts, try dropping to 88--90 °C. One community member tried 88 °C on dark roast and reported excellent results. For medium roasts, stay at 92--93 °C.
-4. **Profile change** -- If the shot is too intense or muddy regardless of adjustments, the coffee may be too dark. Consider LMD 9-8 v1.5 for a less aggressive extraction curve.
+4. **Profile change** -- If the shot is too intense or muddy regardless of adjustments, the coffee may be too dark. Consider LMD 9-8 v1.5 for a less aggressive extraction curve. If the grind sensitivity is the problem, try [Leva 9](leva-9.md), a more forgiving lever emulation.
 
 ## Community Notes
 
 - **Very sensitive to small grind changes** (spikey). One micro step on the Sette can dramatically change shot behavior. This is the profile's main challenge.
-- Leva profiles are cited as more forgiving alternatives that achieve a similar lever-style result.
+- Leva profiles are cited as more forgiving alternatives that achieve a similar lever-style result ("Leva is like Londinium but doesn't have issues if your grind is way off"). See [leva-9](leva-9.md).
 - Pressure is the target, flow is the limit -- the profile is not trying to hit both simultaneously. Pressure defines the curve shape; flow limits prevent channeling.
 - **Do NOT use the same grind setting as IUIUIU or other profiles.** One user reported getting a 3-minute shot when using the same grind setting that worked for IUIUIU. Each profile has fundamentally different flow and pressure dynamics.
 - For dark roasts, 88 °C was a community favorite. The lower temperature tames bitterness while the long extraction still pulls sweetness.
-- Expect longer total shot times (50--65 s) compared to traditional profiles. This is by design.
+- "The pressure drops gradually but not fully" can be normal depending on grind.
 
 ## Common Mistakes
 
 1. **Using the same grind as another profile.** The Londinium profile requires its own grind calibration. Transferring settings from IUIUIU, Adaptive, or other profiles will almost certainly produce an undrinkable shot.
 2. **Adjusting grind in large steps.** Because the profile is so sensitive, large grind changes overshoot. Use 1 micro step at a time on the Sette 270Wi.
-3. **Fighting the long shot time.** A 55--60 s total shot time is normal. Do not grind coarser just to speed up the shot -- you will lose the body and sweetness the profile is designed to produce.
-4. **Using a stepped grinder without micro-adjustment.** Grinders with only macro steps will struggle to find the narrow sweet spot. The Sette 270Wi's micro adjustment is well suited for this profile.
+3. **Judging by shot time alone.** 40--55 s total is normal because of the fill and soak. Do not grind coarser just to speed up the shot -- you will lose the body and sweetness the profile is designed to produce.
+4. **Leaving the default 40 g stop-on-weight with an 18 g dose.** The JSON is set up for 20 g in. With 18 g, 40 g out is 1:2.2; set 36 g for a classic 1:2.
 5. **Ignoring temperature for dark roasts.** Running 93 °C on a dark roast through this long extraction will overextract badly. Drop to 88--90 °C.
 
 ---

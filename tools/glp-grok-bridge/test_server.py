@@ -102,12 +102,109 @@ class ProtocolTest(unittest.TestCase):
         )
         self.assertIsNone(response)
 
-    def test_lists_only_the_assign_tool(self) -> None:
+    def test_lists_only_the_assign_tool_without_machine(self) -> None:
         response = server.handle_rpc(
             {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}, FakeClient()  # type: ignore[arg-type]
         )
         assert response is not None
         self.assertEqual([t["name"] for t in response["result"]["tools"]], ["assign_shot_coffee"])
+
+    def test_lists_machine_tools_when_configured(self) -> None:
+        response = server.handle_rpc(
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+            FakeClient(), FakeMachine(),  # type: ignore[arg-type]
+        )
+        assert response is not None
+        tools = response["result"]["tools"]
+        self.assertEqual(
+            [t["name"] for t in tools],
+            ["assign_shot_coffee", "get_shot_profile", "list_machine_profiles"],
+        )
+        self.assertTrue(all(t["annotations"]["readOnlyHint"] for t in tools[1:]))
+
+    def test_machine_tool_unknown_without_machine(self) -> None:
+        response = server.handle_rpc(
+            {"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+             "params": {"name": "get_shot_profile", "arguments": {}}},
+            FakeClient(),  # type: ignore[arg-type]
+        )
+        assert response is not None
+        self.assertEqual(response["error"]["code"], -32602)
+
+
+LONDINIUM = {
+    "name": "Londinium",
+    "waterTemperature": 92,
+    "globalStopConditions": {"weight": 40},
+    "recipe": {"coffeeIn": 20, "ratio": 2},
+    "phases": [
+        {"type": "FLOW", "target": {"end": 9, "curve": "INSTANT"}, "restriction": 4,
+         "stopConditions": {"time": 10000, "pressureAbove": 4, "waterPumpedInPhase": 65}},
+        {"type": "FLOW", "target": {"end": 0, "curve": "INSTANT"},
+         "stopConditions": {"time": 10000, "pressureBelow": 0.7}},
+        {"type": "PRESSURE", "target": {"start": 9, "end": 3, "curve": "EASE_IN_OUT", "time": 20000},
+         "restriction": 3, "stopConditions": {}},
+    ],
+}
+
+
+class FakeMachine:
+    def __init__(self) -> None:
+        self.shots = {654: {"id": 654, "timestamp": 1794376122, "duration": 422, "profile": LONDINIUM}}
+
+    def latest_shot_id(self) -> int:
+        return 654
+
+    def shot(self, shot_id: int) -> dict[str, Any]:
+        if shot_id not in self.shots:
+            raise server.ToolError(f"No existe el shot {shot_id} en la Gaggiuino.")
+        return self.shots[shot_id]
+
+    def profiles(self) -> list[dict[str, Any]]:
+        return [
+            {"id": 1, "name": "IUIUIU Classic", "selected": "true"},
+            {"id": 14, "name": "Leva 9 v0.9 (community)", "selected": "false"},
+        ]
+
+
+def call_machine(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    response = server.handle_rpc(
+        {"jsonrpc": "2.0", "id": 9, "method": "tools/call", "params": {"name": name, "arguments": arguments}},
+        FakeClient(), FakeMachine(),  # type: ignore[arg-type]
+    )
+    assert response is not None
+    return response["result"]
+
+
+class MachineToolsTest(unittest.TestCase):
+    def test_shot_profile_defaults_to_latest(self) -> None:
+        result = call_machine("get_shot_profile", {})
+        self.assertFalse(result["isError"])
+        text = result["content"][0]["text"]
+        self.assertIn("Shot #654 (11/11/2026 06:48, 42,2 s)", text)
+        self.assertIn("Perfil: Londinium", text)
+        self.assertIn("Para en: 40 g", text)
+        self.assertIn("1. flujo 9 ml/s, límite 4 bar; termina con 10 s o presión > 4 bar o 65 ml bombeados", text)
+        self.assertIn("2. flujo 0 ml/s; termina con 10 s o presión < 0,7 bar", text)
+        self.assertIn("3. presión 9 → 3 bar en 20 s (EASE_IN_OUT), límite 3 ml/s; hasta el final del shot", text)
+
+    def test_shot_profile_without_weight_stop_says_so(self) -> None:
+        profile = dict(LONDINIUM, globalStopConditions={"weight": 0})
+        text = "\n".join(server.describe_profile(profile))
+        self.assertIn("sin stop-on-weight", text)
+
+    def test_unknown_shot_is_an_error(self) -> None:
+        result = call_machine("get_shot_profile", {"shot_id": 1})
+        self.assertTrue(result["isError"])
+
+    def test_rejects_non_integer_shot_id(self) -> None:
+        result = call_machine("get_shot_profile", {"shot_id": "654"})
+        self.assertTrue(result["isError"])
+
+    def test_lists_profiles_and_marks_active(self) -> None:
+        text = call_machine("list_machine_profiles", {})["content"][0]["text"]
+        self.assertIn("- IUIUIU Classic (activo)", text)
+        self.assertIn("- Leva 9 v0.9 (community)\n", text + "\n")
 
 
 if __name__ == "__main__":

@@ -58,13 +58,14 @@ Global settings per profile: water temperature, stop-on-weight, recipe (coffee i
 
 **Description:** Simulates Londinium R lever machine extraction. Smooth shots with great body and syrupiness. Similar to previous default profile. Flexible for all bean/roast types.
 
-**Phases (from JSON):**
-1. **Preinfusion (FLOW):** Target 4 ml/s, pressure limit 3 bar. Stops at: pressure > 3 bar OR 20s OR 60ml
-2. **Soak (PRESSURE):** Target 3 bar. Stops at: 5s
-3. **Ramp (PRESSURE):** 0→9 bar over 4s (LINEAR). 4s duration
-4. **Extraction (PRESSURE):** 9→6 bar (LINEAR over 45s), flow limit 3 ml/s. Runs until global stop
+**Phases (from JSON, verified against `profiles/Londinium.json` and the machine's stored profile, Nov 2026):**
+1. **Preinfusion (FLOW):** Target 9 ml/s (instant), pressure limit 4 bar. Stops at: pressure > 4 bar OR 10s OR 65ml pumped
+2. **Soak (FLOW):** Target 0 (pump off). Stops at: pressure < 0.7 bar OR 10s
+3. **Ramp (PRESSURE):** →9 bar over 1s (EASE_OUT)
+4. **Peak (PRESSURE):** 9 bar for 4s, flow limit 3 ml/s
+5. **Decline (PRESSURE):** 9→3 bar (EASE_IN_OUT over 20s), flow limit 3 ml/s. Runs until global stop
 
-**Default recipe:** 18g in, 36g out (1:2), 93°C
+**Default recipe:** 20g in, 1:2 ratio, stop on 40g, 92°C
 
 ---
 

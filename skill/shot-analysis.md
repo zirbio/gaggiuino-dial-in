@@ -28,7 +28,7 @@ The pressure curve is the primary diagnostic tool. Its shape should match the pr
 
 **Preinfusion (first 5-20 seconds):**
 - Pressure rises gradually as water saturates the puck.
-- Preinfusion pressure limits by profile: IUIUIU/Londinium 4 bar, Adaptive 3 bar, LMD 2 bar, Blooming 7 bar.
+- Preinfusion pressure limits by profile: IUIUIU/Londinium 4 bar, Adaptive 3 bar, LMD 2 bar, Blooming 7 bar, Leva 9 3 bar (hold), Adaptive Dark Roast v2 6 bar (fill) then 2 bar (bloom).
 - Builds TOO FAST (hits limit in 2-3s) = too fine. Builds TOO SLOW (barely rises after 10s) = too coarse.
 
 **Ramp:** should follow the profile's curve type (EASE_OUT, LINEAR, or EASE_IN_OUT). Smooth ramp = good puck integrity. Erratic movement = distribution issues.
@@ -40,6 +40,8 @@ The pressure curve is the primary diagnostic tool. Its shape should match the pr
 | IUIUIU Classic | 7.5 bar | Declines 7.5 to 6 bar | 3 ml/s |
 | LMD 9-8 v1.5 | 9 bar | 9 bar ~5s, drops to 8 bar, then flow-driven decline | 3.5 then 2 ml/s |
 | Londinium | 9 bar | Holds ~4s, then long decline 9 to 3 bar over 20s | 3 ml/s |
+| Leva 9 | 9 bar | Stepped decline 9 to 4.5 bar; each 0.3 bar step ends after 3 ml pumped, so the decline speed follows the flow | 3 ml/s |
+| Adaptive Dark Roast v2 | 9 bar cap | Flow ramps 0-4 ml/s (EASE_IN, 60s); pressure should peak then descend | 9 bar cap |
 | Adaptive | 9 bar cap | Mountain/pyramid: rises, peaks, naturally declines | Flow ramps 0-2.5 ml/s |
 | Blooming | 7-9 bar cap | Long low-pressure soak, then flow-driven at 2 ml/s | 9 bar cap |
 | Filter 2.1 | ~1 bar | Very low, sustained. Flow-driven at 0.2-3 ml/s | 9 bar cap (never reached) |
@@ -117,6 +119,16 @@ In pressure-target phases, flow is a dependent variable. In flow-target phases (
 - PI: flow-driven, pressure limited to 4 bar. Soak: free-fall toward 0.7 bar (up to 10s).
 - Extraction: fast rise to 9 bar (1s), holds ~4s, then long smooth decline 9 to 3 bar over 20s (EASE_IN_OUT).
 - The decline should look like a smooth ski slope. Flat at 9 = too fine. Steep drop = too coarse.
+
+**Leva 9 (35-60s, 18g in / 36g out, set stop-on-weight: the profile has none):**
+- PI: fill to 1.5 bar, rise to 3 bar, hold 3 bar up to 7s or 10g in the cup.
+- Extraction: ramp to 9 bar (4s), then a staircase of 0.3 bar steps down to 4.5 bar. Steps end on water pumped, not time.
+- Steps advancing at a steady pace with flow 1-2.5 ml/s = in range. Decline stalls near 9 bar with very low flow = too fine. Pressure below the steps with flow at the 3 ml/s limit = too coarse.
+
+**Adaptive Dark Roast v2 (30-45s, 18g in / 32g out, 90 °C):**
+- PI: fast fill to 6 bar, bloom at 2 bar for 6s, ramp to 9 bar with flow limited to 2 ml/s.
+- Extraction: flow-driven 0-4 ml/s (EASE_IN), 9 bar cap. Pressure peaks, then descends as flow rises.
+- Flat line at 9 bar = too fine. Pressure never above 3-4 bar = too coarse.
 
 **Adaptive (25-45s, 15g in / 33g out):**
 - PI: flow 7 ml/s, pressure limited to 3 bar. Bloom: holds 3 bar for 6s. Ramp: 0-9 bar over 5s (LINEAR).

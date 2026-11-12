@@ -25,6 +25,8 @@ A [Claude Code skill](https://docs.anthropic.com/en/docs/claude-code) that helps
 | **Adaptive** | Auto-adjusting | Varying coffees without manual tuning |
 | **Blooming Espresso** | Long bloom/soak | Light roasts, fruit-forward |
 | **Filter 2.1** | Low pressure, long extraction | Filter-style clarity in espresso form |
+| **Leva 9 v0.9** (community) | Spring-lever emulation, decline by water pumped | Medium to medium-dark, body, milk drinks |
+| **Adaptive Dark Roast v2** (community) | Flow-driven, descending pressure, 90 °C | Medium-dark to dark, sweet and gentle |
 
 ## Installation
 
@@ -59,6 +61,10 @@ Then use it with:
    ```
 
 The skill uses GLP when its tools are available and falls back to descriptions and photos otherwise. See `skill/glp-shot-data.md`.
+
+### Grok (grok.com)
+
+The `grok/` directory sets Grok up with the same rules as the skill, connected to GLP and to the Gaggiuino (read-only) through the bridge in `tools/glp-grok-bridge/`. See `grok/README.md`.
 
 ### Claude iOS App (via Projects)
 
@@ -108,9 +114,13 @@ The `ios/` directory contains a consolidated knowledge base file ready to paste 
 │       ├── londinium.md
 │       ├── adaptive.md
 │       ├── blooming-espresso.md
-│       └── filter-2.1.md
+│       ├── filter-2.1.md
+│       ├── leva-9.md
+│       └── adaptive-dark-roast-v2.md
 ├── ios/                    # Claude iOS app context
 │   └── dial-in-project-context.md
+├── grok/                   # Grok instructions and setup
+├── tools/glp-grok-bridge/  # MCP bridge for Grok (assign coffee, read machine profiles)
 ├── data/
 │   ├── raw/                # Anonymized Discord community data
 │   └── research/           # Processed research notes

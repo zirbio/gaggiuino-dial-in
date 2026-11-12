@@ -121,6 +121,9 @@ Symptom-first decision tree for diagnosing and fixing espresso shots on a Gaggia
 | LMD 9-8 | Pressure pegged at limit entire shot | Too fine. Pressure decline toward end of shot is normal and expected. |
 | Londinium | Shot takes 3+ minutes | Using the same grind as IUIUIU — Londinium needs a different (usually coarser) setting. Very sensitive to small changes. |
 | Adaptive | Pressure stays pegged flat | Too fine. Should see a mountain/pyramid shape on the pressure graph. |
+| Leva 9 | Last phase runs on at 4.5 bar and the cup overflows | The community profile has no stop-on-weight. Set one (36-40 g). |
+| Leva 9 | Decline much faster or slower than the cup weight suggests | Steps end on calculated pumped water. Check PZ calibration. |
+| Adaptive Dark Roast v2 | Pressure pinned at 9 bar | Too fine. The flow-limited extraction should give a descending pressure curve. |
 | Blooming | Phases getting skipped | Jumpy scales triggering weight-based phase transitions early. Remove weight conditions from phases 1-2 or tare constantly. |
 | Filter 2.1 | Shot runs too hot | Normal for long extractions. Use a significantly coarser grind than espresso (macro 14-20). |
 
@@ -140,5 +143,5 @@ Symptom-first decision tree for diagnosing and fixing espresso shots on a Gaggia
 |---|---|
 | Light | Adaptive, Blooming, Zer0 |
 | Medium / Medium-Light | Adaptive, IUIUIU Classic |
-| Medium-Dark | LMD 9-8, IUIUIU Classic, Londinium |
-| Dark | Londinium, LMD 9-8, Stock 9-bar, Adaptive (with lower temp) |
+| Medium-Dark | LMD 9-8, IUIUIU Classic, Londinium, Leva 9 |
+| Dark | Londinium, LMD 9-8, Leva 9, Stock 9-bar, Adaptive Dark Roast v2 |

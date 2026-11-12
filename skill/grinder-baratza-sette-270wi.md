@@ -42,8 +42,10 @@ These are approximations. Actual settings depend on coffee origin, roast level, 
 | ------------------- | --------------------- | ------------------------------------------------------------ |
 | IUIUIU Classic      | 7-12                  | Good preinfusion helps; grind fine. Start at 9E.             |
 | LMD 9-8 v1.5        | 8-13                  | Long preinfusion; start slightly coarser than IUIUIU.        |
-| Londinium           | 7-12                  | Similar to IUIUIU, lever-style extraction. Start at 9E.     |
+| Londinium           | 7-12                  | Lever-style extraction. Start at 9E; usually coarser than IUIUIU. |
+| Leva 9 (community)  | 7-12                  | Lever emulation. Start at 9E or at the Londinium setting.   |
 | Adaptive            | 8-14                  | Designed to be forgiving; wider usable range. Start at 10E.  |
+| Adaptive Dark Roast v2 (community) | 8-14     | As Adaptive. Start at 10E and go finer.                      |
 | Blooming Espresso   | 9-14                  | Long bloom phase reduces resistance; can go coarser.         |
 | Filter 2.1          | 14-20                 | Much coarser than espresso; paper filter further reduces resistance. |
 
